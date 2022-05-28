@@ -1,0 +1,146 @@
+basePath: /v1
+definitions:
+  model.BalanceService:
+    properties:
+      auth_id:
+        description: tenant authid.
+        type: string
+      balance:
+        description: balance in USD($)
+        type: number
+    required:
+    - auth_id
+    - balance
+    type: object
+host: api.tiniyo.com
+info:
+  contact:
+    email: support@tiniyo.com
+    name: API Support
+    url: http://www.tiniyo.com/support
+  description: This document helps to understand to use account balance apis to manage your tenants balance. For this API's, you can use the your tiniyo `AuthID` as Key and `AuthSecretID` as password for `Basic auth`. If you need any help for integration just reach out to us at Tiniyo at [`support@tiniyo.com`](support@tiniyo.com).
+  license: {}
+  termsOfService: https://tiniyo.com/legal/tos.html
+  title: '"Tiniyo Account Balance API"'
+  version: "1.0"
+paths:
+  /Accounts/{auth_id}/Balance:
+    get:
+      description: This API allows you to retrieve your account balance or tanent account balance.
+      parameters:
+      - description: Tiniyo Account Auth ID
+        in: path
+        name: auth_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.BalanceService'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Account balance not found
+          schema:
+            type: string
+      security:
+      - BasicAuth: []
+      summary: Get Account balance by AuthID.
+      tags:
+      - Balance
+  /Accounts/{vendor_auth_id}/Balances/{tenant_auth_id}:
+    get:
+      description: This API allows you to retrieve your tenant account balance using your vendor auth id.
+      parameters:
+      - description: Tiniyo Vendor Account Auth ID
+        in: path
+        name: vendor_auth_id
+        required: true
+        type: string
+      - description: Tiniyo Tenant Account Auth ID
+        in: path
+        name: tenant_auth_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.BalanceService'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "404":
+          description: Account balance not found
+          schema:
+            type: string
+        "412":
+          description: 'StatusPreconditionFailed : Vendor authid is not vendor'
+          schema:
+            type: string
+      security:
+      - BasicAuth: []
+      summary: Get Account balance by vendor using AuthID.
+      tags:
+      - Balance
+    patch:
+      consumes:
+      - application/json
+      description: This API allows you to recharge your tenant account balance using your vendor auth id. Balance can be credit or debit based on +/- ve value. Balance value is in USD($).
+      parameters:
+      - description: Tiniyo Vendor Account Auth ID
+        in: path
+        name: vendor_auth_id
+        required: true
+        type: string
+      - description: Tiniyo Tenant Account Auth ID
+        in: path
+        name: tenant_auth_id
+        required: true
+        type: string
+      - description: User Data
+        in: body
+        name: message
+        required: true
+        schema:
+          $ref: '#/definitions/model.BalanceService'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Balance updated
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "406":
+          description: 'StatusNotAcceptable: Json validation failed'
+          schema:
+            type: string
+        "412":
+          description: 'StatusPreconditionFailed : Vendor authid is not vendor'
+          schema:
+            type: string
+        "422":
+          description: 'StatusUnprocessableEntity: update account balance failed'
+          schema:
+            type: string
+      security:
+      - BasicAuth: []
+      summary: Recharge Account balance by vendor using AuthID.
+      tags:
+      - Balance
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"

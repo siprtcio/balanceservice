@@ -1,0 +1,223 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This document helps to understand to use account balance apis to manage your tenants balance. For this API's, you can use the your tiniyo `AuthID` as Key and `AuthSecretID` as password for `Basic auth`. If you need any help for integration just reach out to us at Tiniyo at [`support@tiniyo.com`](support@tiniyo.com).",
+        "title": "\"Tiniyo Account Balance API\"",
+        "termsOfService": "https://tiniyo.com/legal/tos.html",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.tiniyo.com/support",
+            "email": "support@tiniyo.com"
+        },
+        "license": {},
+        "version": "1.0"
+    },
+    "host": "api.tiniyo.com",
+    "basePath": "/v1",
+    "paths": {
+        "/Accounts/{auth_id}/Balance": {
+            "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "This API allows you to retrieve your account balance or tanent account balance.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Balance"
+                ],
+                "summary": "Get Account balance by AuthID.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tiniyo Account Auth ID",
+                        "name": "auth_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.BalanceService"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Account balance not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/Accounts/{vendor_auth_id}/Balances/{tenant_auth_id}": {
+            "get": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "This API allows you to retrieve your tenant account balance using your vendor auth id.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Balance"
+                ],
+                "summary": "Get Account balance by vendor using AuthID.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tiniyo Vendor Account Auth ID",
+                        "name": "vendor_auth_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tiniyo Tenant Account Auth ID",
+                        "name": "tenant_auth_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.BalanceService"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "Account balance not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "412": {
+                        "description": "StatusPreconditionFailed : Vendor authid is not vendor",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "BasicAuth": []
+                    }
+                ],
+                "description": "This API allows you to recharge your tenant account balance using your vendor auth id. Balance can be credit or debit based on +/- ve value. Balance value is in USD($).",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Balance"
+                ],
+                "summary": "Recharge Account balance by vendor using AuthID.",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Tiniyo Vendor Account Auth ID",
+                        "name": "vendor_auth_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Tiniyo Tenant Account Auth ID",
+                        "name": "tenant_auth_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "User Data",
+                        "name": "message",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.BalanceService"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Balance updated",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "406": {
+                        "description": "StatusNotAcceptable: Json validation failed",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "412": {
+                        "description": "StatusPreconditionFailed : Vendor authid is not vendor",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "422": {
+                        "description": "StatusUnprocessableEntity: update account balance failed",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.BalanceService": {
+            "type": "object",
+            "required": [
+                "auth_id",
+                "balance"
+            ],
+            "properties": {
+                "auth_id": {
+                    "description": "tenant authid.",
+                    "type": "string"
+                },
+                "balance": {
+                    "description": "balance in USD($)",
+                    "type": "number"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BasicAuth": {
+            "type": "basic"
+        }
+    }
+}

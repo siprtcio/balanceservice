@@ -11,7 +11,7 @@ COPY --from=builder /go/src/github.com/siprtcio/balanceservice/app .
 COPY --from=builder /go/src/github.com/siprtcio/balanceservice/configs /configs
 
 # Health Check for the service
-HEALTHCHECK --timeout=5s --interval=3s --retries=3 CMD curl --fail http://localhost:8080/v1/health || exit 1
+HEALTHCHECK --timeout=5s --interval=60s --retries=3 CMD curl --fail http://localhost:8080/v1/health || exit 1
 
 # Expose the application on port 8080.
 # This should be the same as in the app.conf file
